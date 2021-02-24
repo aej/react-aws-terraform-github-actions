@@ -1,0 +1,50 @@
+name: Deploy Production
+on: [push]
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      # Clone the repo
+      - name: Clone repository
+        uses: actions/checkout@v1
+      # Build the static site
+      - name: Create static build
+        run: yarn install && yarn build
+      # Upload the artifact for other stages to use
+      - name: Share artifact in github workflow
+        uses: actions/upload-artifact@v1
+        with:
+          name: build
+          path: build
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      # Download the build artifact
+      - name: Get build artifact
+        uses: actions/download-artifact@v1
+        with:
+          name: build
+      # Setup the AWS credentials
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-west-1
+      # Copy the files from /build to s3 bucket
+      - name: Deploy static site to S3 bucket
+        run: aws s3 sync . s3://${{ secrets.S3_BUCKET_NAME }} --delete
+        working-directory: build
+      # Invalidate index file in Cloudfront (this forces edges to fetch the latest index.html)
+      - name: invalidate
+        uses: chetan/invalidate-cloudfront-action@master
+        env:
+          DISTRIBUTION: ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}
+          PATHS: '/index.html'
+          AWS_REGION: eu-west-1
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
