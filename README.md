@@ -1,46 +1,80 @@
-# Getting Started with Create React App
+# react-aws-terraform-github-actions
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A complete example of provisioning a React app in AWS with deployment pipeline.
 
-## Available Scripts
+Features:
 
-In the project directory, you can run:
+* Hosted in AWS S3
+* Cloudfront CDN
+* SSL
+* Infrastructure provisioned by Terraform
+* Github Actions deployment pipeline
 
-### `yarn start`
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+S3 with Cloudfront. Github actions deployment pipeline. All infrastructure is provisioned using Terraform.
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
 
-### `yarn test`
+## Pre-requisites
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+1) An AWS account 
+2) (For Terraform) An AWS User with programmatic access (an Access Key ID and Secret Access Key) and the following Permissions
+   - AmazonS3FullAccess
+   - CloudFrontFullAccess
+   - AWSCertificateManagerFullAccess
+2) (For Github Deployment pipeline) An AWS User with the following permissions:
+   - TODO
+   - TODO
+2) Terraform ([Installation Instructions](https://www.terraform.io/downloads.html)) 
 
-### `yarn build`
+## Instructions
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### Setup terraform
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+```bash
+export AWS_ACCESS_KEY_ID=<your-aws-access-key-id>
+export AWS_SECRET_ACCESS_KEY=<your-aws-secret-access-key>
+```
 
-### `yarn eject`
+```bash
+cd infrastructure
+terraform init
+```
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+```bash
+terraform plan
+```
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+Result of running plan
+```bash
+Plan: 3 to add, 0 to change, 0 to destroy.
+```
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+```bash
+terraform apply
+```
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+You will get an error from the Cloudfront that the SLL certificate doesn't exist - TODO: Create that first, before creating the cloudfront distribution
 
-## Learn More
+### Confirm certificate
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+You will need to manually validate the certificate. Log into the AWS console and make sure you are in the `us-east-1` region. Navigate to the `Certificate Manager` and you will find the domain name waiting for validation. Follow the steps listed in the AWS Console to validate the domain. This involves a CNAME record to your DNS.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+Wait a few minutes for it to verify.
+
+### Create the cloudfront distribution
+
+This will take a few minutes to complete
+
+TODO: separate this out.
+
+
+### Update your DNS record 
+
+The Cloudfront distribution will be given a domain. Create a CNAME record pointing to that domain.
+
+
+
+## TODOs
+
+- make the domain name configurable
