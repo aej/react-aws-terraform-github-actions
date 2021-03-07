@@ -10,9 +10,7 @@ Features:
 * Infrastructure provisioned by Terraform
 * Github Actions deployment pipeline
 
-
 S3 with Cloudfront. Github actions deployment pipeline. All infrastructure is provisioned using Terraform.
-
 
 ## Pre-requisites
 
@@ -28,7 +26,6 @@ S3 with Cloudfront. Github actions deployment pipeline. All infrastructure is pr
 2) Terraform ([Installation Instructions](https://www.terraform.io/downloads.html)) 
 
 ## Instructions
-
 
 ### Setup terraform
 
@@ -46,34 +43,24 @@ terraform init
 terraform plan
 ```
 
-Result of running plan
-```bash
-Plan: 3 to add, 0 to change, 0 to destroy.
-```
+and
 
 ```bash
 terraform apply
 ```
 
-You will get an error from the Cloudfront that the SLL certificate doesn't exist - TODO: Create that first, before creating the cloudfront distribution
+If you get an error from Cloudfront that the SLL certificate doesn't exist then manually verify the Certificate (see below) and re-apply the Terraform.
 
 ### Confirm certificate
 
-You will need to manually validate the certificate. Log into the AWS console and make sure you are in the `us-east-1` region. Navigate to the `Certificate Manager` and you will find the domain name waiting for validation. Follow the steps listed in the AWS Console to validate the domain. This involves a CNAME record to your DNS.
+Log into the AWS console and make sure you are in the `us-east-1` region. Navigate to the `Certificate Manager` and you will find the domain name waiting for validation. Follow the steps listed in the AWS Console to validate the domain. This involves setting up a CNAME record in your DNS.
 
 Wait a few minutes for it to verify.
-
-### Create the cloudfront distribution
-
-This will take a few minutes to complete
-
-TODO: separate this out.
 
 
 ### Update your DNS record 
 
 The Cloudfront distribution will be given a domain. Create a CNAME record pointing to that domain. It can take some time for this to propagate.
-
 
 # Create a policy to allow the CI User to invalidate paths
 
@@ -87,7 +74,3 @@ AWS_SECRET_ACCESS_KEY | <secret-key>
 S3_BUCKET_NAME | react-aws-terraform-github-actions
 CLOUDFRONT_DISTRIBUTION_ID | <cloudfront-distribution-id>
 
-
-## TODOs
-
-- make the domain name configurable
