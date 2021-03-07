@@ -62,15 +62,16 @@ Wait a few minutes for it to verify.
 
 The Cloudfront distribution will be given a domain. Create a CNAME record pointing to that domain. It can take some time for this to propagate.
 
-# Create a policy to allow the CI User to invalidate paths
+## Create a policy to allow the CI User to invalidate paths
 
 Our Terraform should have created a policy called `cloudfront-invalidate-paths`. Inside the AWS Console attach this policy to the Github Actions deployment User.
 
-# Add the following secrets to Github Actions:
+## Add the following secrets to Github Actions:
 
-NAME | VALUE
-AWS_ACCESS_KEY_ID | <access-key-id>
-AWS_SECRET_ACCESS_KEY | <secret-key>
-S3_BUCKET_NAME | react-aws-terraform-github-actions
-CLOUDFRONT_DISTRIBUTION_ID | <cloudfront-distribution-id>
+| NAME | VALUE |
+| ---- | ----- |
+| AWS_ACCESS_KEY_ID | <access-key-id> |
+| AWS_SECRET_ACCESS_KEY | <secret-key> |
+| S3_BUCKET_NAME | react-aws-terraform-github-actions |
+| CLOUDFRONT_DISTRIBUTION_ID | <cloudfront-distribution-id> |
 
