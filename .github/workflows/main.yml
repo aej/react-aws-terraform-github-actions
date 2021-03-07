@@ -9,6 +9,14 @@ jobs:
       # Clone the repo
       - name: Clone repository
         uses: actions/checkout@v1
+      # Cache node modules
+      - name: Cache node modules
+        uses: actions/cache@v1
+        with:
+          path: node_modules
+          key: yarn-deps-${{ hashFiles('yarn.lock') }}
+          restore-keys: |
+            yarn-deps-${{ hashFiles('yarn.lock') }}
       # Build the static site
       - name: Create static build
         run: yarn install && yarn build
